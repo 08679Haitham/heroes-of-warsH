@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لعبتي - لعبة مطابقة البطاقات</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(-45deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
+      background-size: 400% 400%;
+      animation: gradientAnimation 15s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    @keyframes gradientAnimation {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .game-container {
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.85);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(4, 100px);
+      grid-gap: 10px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+
+    .card {
+      width: 100px;
+      height: 100px;
+      background-color: #ccc;
+      border-radius: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      font-size: 24px;
+      color: transparent;
+      position: relative;
+      transition: transform 0.3s;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .card.flipped {
+      background-color: #fff;
+      color: #333;
+    }
+
+    .card.matched {
+      background-color: #4caf50;
+      color: #fff;
+      pointer-events: none;
+    }
+
+    .controls {
+      margin-top: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>لعبتي - لعبة مطابقة البطاقات</h1>
+    <div class="cards-container">
+      <!-- سيتم إضافة البطاقات هنا بواسطة JavaScript -->
+    </div>
+    <div class="controls">
+      <button id="restartBtn">إعادة التشغيل</button>
+      <p id="message"></p>
+    </div>
+  </div>
+  <script>
+    const cardsArray = [
+      '🍎','🍎','🍌','🍌','🍒','🍒','🍇','🍇',
+      '🍉','🍉','🍓','🍓','🍍','🍍','🥥','🥥'
+    ];
+
+    let flippedCards = [];
+    let matchedCards = 0;
+
+    const cardsContainer = document.querySelector('.cards-container');
+    const restartBtn = document.getElementById('restartBtn');
+    const message = document.getElementById('message');
+
+    function shuffleCards() {
+      cardsArray.sort(() => Math.random() - 0.5);
+    }
+
+    function createCards() {
+      shuffleCards();
+      cardsContainer.innerHTML = '';
+      cardsArray.forEach(symbol => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.textContent = symbol;
+        card.addEventListener('click', flipCard);
+        cardsContainer.appendChild(card);
+      });
+    }
+
+    function flipCard() {
+      if (flippedCards.length < 2 && !this.classList.contains('flipped')) {
+        this.classList.add('flipped');
+        flippedCards.push(this);
+
+        if (flippedCards.length === 2) {
+          checkMatch();
+        }
+      }
+    }
+
+    function checkMatch() {
+      const [firstCard, secondCard] = flippedCards;
+      if (firstCard.textContent === secondCard.textContent) {
+        firstCard.classList.add('matched');
+        secondCard.classList.add('matched');
+        matchedCards += 2;
+        flippedCards = [];
+        if (matchedCards === cardsArray.length) {
+          message.textContent = 'مبروك! فزت باللعبة!';
+        }
+      } else {
+        setTimeout(() => {
+          firstCard.classList.remove('flipped');
+          secondCard.classList.remove('flipped');
+          flippedCards = [];
+        }, 1000);
+      }
+    }
+
+    function restartGame() {
+      flippedCards = [];
+      matchedCards = 0;
+      message.textContent = '';
+      createCards();
+    }
+
+    restartBtn.addEventListener('click', restartGame);
+    createCards();
+  </script>
+</body>
+</html>
